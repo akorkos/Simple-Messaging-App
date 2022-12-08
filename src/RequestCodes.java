@@ -1,0 +1,10 @@
+public enum RequestCodes {
+    REGISTER,
+    SHOW_ACCOUNTS,
+    NEW_MESSAGE,
+    SHOW_MESSAGES,
+    READ_MESSAGE,
+    DELETE_MESSAGE,
+    INVALID_REQUEST,
+    AUTH
+}
