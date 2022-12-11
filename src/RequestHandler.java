@@ -3,46 +3,41 @@ import java.net.Socket;
 
 public class RequestHandler {
     private String ip;
-    private String[] args;
+
     private int port;
-    private RequestCodes fid;
+
     private Socket socket = null;
     private ObjectInputStream input;
     private ObjectOutputStream output;
 
-    RequestHandler(String ip, String port, RequestCodes fid, String[] args){
+    RequestHandler(String ip, String port){
         this.ip = ip;
-        this.port = Integer.getInteger(port);
-        this.fid = fid;
-        this.args = args;
+        this.port = Integer.parseInt(port);
     }
 
-    public void openConnection() {
-        if (socket != null)
-            throw new RuntimeException("Socket already open");
-            // System.err.println("Socket already open");
-            // System.exit(1);
+    public void openConnection() throws IOException {
 
-        try {
-            socket = new Socket(ip, port);
-            input = new ObjectInputStream(socket.getInputStream());
-            output = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e){
-            throw new RuntimeException(e.getMessage());
-            // System.err.println(e.getMessage());
-            // System.exit(1);
+        if (socket != null) {
+            //throw new RuntimeException("Socket already open");
+            System.err.println("Socket already open");
+            System.exit(1);
         }
+
+        socket = new Socket(ip, port);
+        System.out.println(socket.isConnected());
+        input = new ObjectInputStream(socket.getInputStream());
+        System.out.println(input.available());
+        output = new ObjectOutputStream(socket.getOutputStream());
     }
 
-    public Response sendRequest(Request request) {
-        try {
-            Object response = input.readObject();
-            if (response instanceof Response)
-                return (Response) response;
-            throw new RuntimeException("Bad response");
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public Response sendRequest(Request request) throws IOException, ClassNotFoundException {
+        output.writeObject(request);
+
+        Object response = input.readObject();
+
+        if (response instanceof Response)
+            return (Response) response;
+        throw new RuntimeException("Bad response");
     }
 
     public void closeConnection(){

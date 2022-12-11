@@ -6,5 +6,6 @@ public enum RequestCodes {
     READ_MESSAGE,
     DELETE_MESSAGE,
     INVALID_REQUEST,
-    AUTH
+    AUTH,
+    EXIT
 }

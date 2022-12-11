@@ -16,4 +16,8 @@ public class Request implements Serializable {
     public String[] getArgs() {
         return args;
     }
+
+    public String getArg(int i){
+        return args[i];
+    }
 }

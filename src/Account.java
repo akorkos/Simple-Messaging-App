@@ -4,10 +4,10 @@ import java.util.List;
 
 public class Account implements Serializable {
     private String username;
-    private int authToken;
+    private String authToken;
     private MessageBox inbox;
 
-    Account(String username, int authToken){
+    Account(String username, String authToken){
         this.username = username;
         this.authToken = authToken;
         inbox = new MessageBox();
@@ -17,7 +17,7 @@ public class Account implements Serializable {
         return username;
     }
 
-    public int getAuthToken() {
+    public String getAuthToken() {
         return authToken;
     }
 

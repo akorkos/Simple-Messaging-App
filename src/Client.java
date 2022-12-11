@@ -1,7 +1,8 @@
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Client {
-    // final private String REGEX = "[a-zA-Z0-9-]";
+
     private String ip;
     private String[] args;
     private int port;
@@ -9,22 +10,29 @@ public class Client {
 
     private RequestHandler requestHandler;
 
-    Client(String ip, String port, String fid, String[] args){
+    Client(String ip, String port, String fid, String[] args) throws IOException, ClassNotFoundException {
         this.ip = ip;
-        this.port = Integer.getInteger(port);
+        this.port = Integer.parseInt(port);
         this.fid = cast(Integer.parseInt(fid));
         this.args = args;
-        requestHandler = new RequestHandler(ip, port, this.fid, args);
 
-        execute();
-    }
+        requestHandler = new RequestHandler(ip, port);
 
-    private void execute(){
         requestHandler.openConnection();
 
-        requestHandler.sendRequest(new Request(this.fid, this.args));
 
-        requestHandler.closeConnection();
+        Request request = new Request(this.fid, this.args);
+
+        System.out.println("request");
+
+        Response response = requestHandler.sendRequest(request);
+
+        switch (request.getFid()){
+            case REGISTER -> System.out.println(response.getAuthToken());
+            case EXIT -> requestHandler.closeConnection();
+        }
+
+        //
     }
 
     private RequestCodes cast(int fid){
@@ -40,7 +48,7 @@ public class Client {
         };
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         String ip, port, fid;
         String[] arguments;
 
