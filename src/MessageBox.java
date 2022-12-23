@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageBox  {
-    private ArrayList<Message> messageBox;
+    private final ArrayList<Message> messageBox;
 
     MessageBox() {
         messageBox = new ArrayList<>();

@@ -1,15 +1,15 @@
 import java.io.Serializable;
 
 public class Request implements Serializable {
-    private String[] args;
-    private RequestCodes fid;
+    private final String[] args;
+    private final int fid;
 
-    Request(RequestCodes fid, String[] args){
-        this.fid = fid;
+    Request(String fid, String[] args){
+        this.fid = Integer.parseInt(fid);
         this.args = args;
     }
 
-    public RequestCodes getFid() {
+    public int getFid() {
         return fid;
     }
 
@@ -17,7 +17,4 @@ public class Request implements Serializable {
         return args;
     }
 
-    public String getArg(int i){
-        return args[i];
-    }
 }

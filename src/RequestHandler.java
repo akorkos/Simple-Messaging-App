@@ -2,12 +2,13 @@ import java.io.*;
 import java.net.Socket;
 
 public class RequestHandler {
-    private String ip;
+    private final String ip;
 
-    private int port;
+    private final int port;
 
     private Socket socket = null;
-    private ObjectInputStream input;
+
+    private BufferedReader input;
     private ObjectOutputStream output;
 
     RequestHandler(String ip, String port){
@@ -15,43 +16,42 @@ public class RequestHandler {
         this.port = Integer.parseInt(port);
     }
 
-    public void openConnection() throws IOException {
-
+    public void openConnection(){
         if (socket != null) {
-            //throw new RuntimeException("Socket already open");
             System.err.println("Socket already open");
             System.exit(1);
         }
 
-        socket = new Socket(ip, port);
-        System.out.println(socket.isConnected());
-        input = new ObjectInputStream(socket.getInputStream());
-        System.out.println(input.available());
-        output = new ObjectOutputStream(socket.getOutputStream());
+        try {
+            socket = new Socket(ip, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new ObjectOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
-    public Response sendRequest(Request request) throws IOException, ClassNotFoundException {
-        output.writeObject(request);
-
-        Object response = input.readObject();
-
-        if (response instanceof Response)
-            return (Response) response;
-        throw new RuntimeException("Bad response");
+    public void sendRequest(Request request) {
+        try {
+            output.writeObject(request);
+            String out;
+            while ((out = input.readLine()) != null)
+                System.out.println(out);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
     public void closeConnection(){
         try {
-            if (socket != null && !socket.isClosed()){
-                socket.close();
-                input.close();
-                output.close();
-            }
+            socket.close();
+            input.close();
+            output.close();
         } catch (IOException e){
-            throw new RuntimeException(e.getMessage());
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
-
-
-
 }

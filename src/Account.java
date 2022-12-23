@@ -1,15 +1,17 @@
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.security.SecureRandom;
 import java.util.List;
 
 public class Account implements Serializable {
-    private String username;
-    private String authToken;
-    private MessageBox inbox;
+    private final String username;
+    private final int authToken;
+    private final MessageBox inbox;
+    private static final char[] ALPHABET = "0123456789".toCharArray();
 
-    Account(String username, String authToken){
+    Account(String username){
         this.username = username;
-        this.authToken = authToken;
+        authToken = Integer.parseInt(NanoIdUtils.randomNanoId(new SecureRandom(), ALPHABET, 4));
         inbox = new MessageBox();
     }
 
@@ -17,7 +19,7 @@ public class Account implements Serializable {
         return username;
     }
 
-    public String getAuthToken() {
+    public int getAuthToken() {
         return authToken;
     }
 
@@ -34,6 +36,11 @@ public class Account implements Serializable {
     }
 
     public void addMessage(String sender, String body){
-        inbox.addMessage(new Message(sender, username, body));
+        inbox.addMessage(new Message(sender, body));
+    }
+
+    @Override
+    public String toString(){
+        return this.username;
     }
 }

@@ -1,29 +1,19 @@
-import me.nimavat.shortid.ShortId;
-
-import java.util.Objects;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import java.security.SecureRandom;
 
 public class Message {
-    private Boolean isRead;
-    private String sender, receiver, body, id;
-
-    Message(String sender, String receiver, String body){
+    private boolean isRead;
+    private final String sender,  body, id;
+    private static final char[] ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    Message(String sender, String body){
         this.sender = sender;
-        this.receiver = receiver;
         this.body = body;
         isRead = false;
-        id = ShortId.generate();
-    }
-
-    public String getBody() {
-        return body;
+        id = NanoIdUtils.randomNanoId(new SecureRandom(), ALPHABET, 4);
     }
 
     public String getSender() {
         return sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
     }
 
     public boolean isRead(){
@@ -38,4 +28,8 @@ public class Message {
         isRead = true;
     }
 
+    @Override
+    public String toString(){
+        return "(" + this.sender + ") " + this.body;
+    }
 }

@@ -1,126 +1,146 @@
-import me.nimavat.shortid.ShortId;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ClientHandler extends Thread{
 
-    private Socket socket;
+    private final Socket socket;
+    private final ServerHandler server;
     private ObjectInputStream input;
-    private ObjectOutputStream output;
+    private PrintWriter output;
 
-    private ArrayList<Account> accounts;
-
-
-    ClientHandler(Socket socket, ArrayList<Account> accounts){
+    ClientHandler(Socket socket, ServerHandler server){
         this.socket = socket;
-        this.accounts = accounts;
+        this.server = server;
         try {
             input = new ObjectInputStream(this.socket.getInputStream());
-            output = new ObjectOutputStream(this.socket.getOutputStream());
-
-            respond();
+            output = new PrintWriter(this.socket.getOutputStream(), true);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    private void respond(){
-        try{
-            while (true) {
-                Request request;
-                if (input.readObject() instanceof Request) {
-                    request = (Request) input.readObject();
+    @Override
+    public void run() {
+        try {
+            Request request = (Request) input.readObject();
 
-                    Account user = auth(request.getArg(0), request.getArg(1));
-
-                    if (user == null)
-                        output.writeObject(new Response(ResponseCodes.NO_AUTH));
-                    else {
-                        switch (request.getFid()) {
-                            case REGISTER -> output.writeObject(createAccount(request.getArg(0)));
-                            case NEW_MESSAGE -> output.writeObject(sendMessage(user, request.getArg(0), request.getArg(1)));
-                            case READ_MESSAGE -> output.writeObject(readMessage(user, request.getArg(0)));
-                            case DELETE_MESSAGE -> output.writeObject(deleteMessage(user, request.getArg(0)));
-                            case SHOW_MESSAGES -> output.writeObject(showInbox(user));
-                            case SHOW_ACCOUNTS -> output.writeObject(showAccounts());
-                        }
-                    }
-                } else
-                    output.writeObject(new Response(ResponseCodes.BAD_REQUEST));
+            switch (request.getFid()) {
+                case 1 -> createAccount(request.getArgs());
+                case 2 -> showAccounts(request.getArgs());
+                case 3 -> sendMessage(request.getArgs());
+                case 4 -> showInbox(request.getArgs());
+                case 5 -> readMessage(request.getArgs());
+                case 6 -> deleteMessage(request.getArgs());
             }
-        } catch (IOException | ClassNotFoundException e){
-            throw new RuntimeException(e.getMessage());
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("Socket could not be closed");
+                System.exit(1);
+            }
+        }
+    }
+    private boolean isValid(String username){
+        Pattern usernamePattern = Pattern.compile("^([a-zA-Z])+([\\w]{2,})+$");
+        Matcher matcher = usernamePattern.matcher(username);
+        return matcher.matches();
+    }
+
+    private void createAccount(String[] args){
+        createAccount(args[0]);
+    }
+    private void createAccount(String username){
+        if (!isValid(username))
+            output.println("Invalid Username");
+        else if (server.accountExists(username))
+            output.println("Sorry, the user already exists");
+        else {
+            Account account = new Account(username);
+            server.addAccount(account);
+            output.println(account.getAuthToken());
         }
     }
 
-    private Account auth(String username, String authToken){
-        Account user = accounts.stream().filter(acc -> username.equals(acc.getUsername())).findFirst().orElse(null);
-
-        if (user != null && Objects.equals(user.getAuthToken(), authToken))
-            return user;
-        return null;
+    private void showAccounts(String[] args){
+        if (server.authenticate(Integer.parseInt(args[0])))
+            showAccounts();
     }
 
-    private Response createAccount(String username){
-        Pattern pattern = Pattern.compile("[A-Za-z-]");
-        Matcher matcher = pattern.matcher(username);
+    private void showAccounts(){
+        StringBuilder out = new StringBuilder();
 
-        Account recipient = accounts.stream().filter(acc -> username.equals(acc.getUsername())).findFirst().orElse(null);
-
-
-
-        if (!matcher.matches())
-            return new Response(ResponseCodes.BAD_USERNAME);
-
-        if (recipient == null)
-            return new Response(ResponseCodes.USER_EXISTS);
-
-        String authToken = ShortId.generate();
-
-        accounts.add(new Account(username, authToken));
-
-        return new Response(ResponseCodes.OK, authToken);
+        for (int i = 0; i < server.getAccounts().size(); i++)
+            out.append(i + 1).append(". ").append(server.getAccounts().get(i)).append("\n");
+        output.println(out);
     }
 
-    private Response showAccounts(){
-        return new Response(ResponseCodes.OK, accounts);
+    private void sendMessage(String[] args){
+        if (server.authenticate(Integer.parseInt(args[0])))
+            sendMessage(args[1], args[2]);
     }
 
-    private Response sendMessage(Account sender, String recipientUsername, String message){
-        Account recipient = accounts.stream().filter(acc -> recipientUsername.equals(acc.getUsername())).findFirst().orElse(null);
+    private void sendMessage(String recipient, String message){
+        Account recipientAccount = server.getAccount(recipient);
 
-        if (recipient == null)
-            return new Response(ResponseCodes.INVALID_RECIPIENT);
-
-        recipient.addMessage(sender.getUsername(), message);
-
-        return new Response(ResponseCodes.OK);
+        if (recipientAccount == null)
+            output.println("User does not exist");
+        else {
+            recipientAccount.addMessage(recipient, message);
+            output.println("OK");
+        }
     }
 
-    private Response showInbox(Account user){
-        return new Response(ResponseCodes.OK, user.getInbox());
+    private void showInbox(String[] args){
+        if (server.authenticate(Integer.parseInt(args[0])))
+            showInbox(Integer.parseInt(args[0]));
     }
 
-    private Response readMessage(Account user, String id){
-        Message message = user.readMessage(id);
+    private void showInbox(int authToken){
+        Account account = server.getAccount(authToken);
+        List<Message> inbox = account.getInbox();
+        StringBuilder out = new StringBuilder();
+
+        for (Message message : inbox)
+            out.append(message.getId()).append(". from: ").append(message.getSender()).append(message.isRead() ? "\n" : "*\n");
+        output.println(out);
+    }
+
+    private void readMessage(String[] args){
+        if (server.authenticate(Integer.parseInt(args[0])))
+            readMessage(Integer.parseInt(args[0]), args[1]);
+    }
+
+    private void readMessage(int authToken, String id){
+        Account account = server.getAccount(authToken);
+        Message message = account.readMessage(id);
 
         if (message == null)
-            return new Response(ResponseCodes.BAD_ID);
-
-        return new Response(ResponseCodes.OK, message);
+            output.println("Message ID does not exist");
+        else
+            output.println(message);
     }
 
-    private Response deleteMessage(Account user, String id){
-        boolean success = user.deleteMessage(id);
-        if (success)
-            return new Response(ResponseCodes.OK);
-        return new Response(ResponseCodes.BAD_ID);
+    private void deleteMessage(String[] args){
+        if (server.authenticate(Integer.parseInt(args[0])))
+            deleteMessage(Integer.parseInt(args[0]), args[1]);
+    }
+
+    private void deleteMessage(int authToken, String id){
+        Account account = server.getAccount(authToken);
+
+        if (!account.deleteMessage(id))
+            output.println("Message does not exist");
+        else
+            output.println("OK");
     }
 }

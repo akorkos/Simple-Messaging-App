@@ -1,39 +1,46 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerHandler {
-    private int port;
-    private ServerSocket serverSocket = null;
-    private Socket clientSocket;
-    private Thread clientHandler;
+    private final ArrayList<Account> accounts;
 
-    private ArrayList<Account> accounts;
-
-    ServerHandler(int port, ArrayList<Account> accounts){
-        this.port = port;
+    ServerHandler(String port, ArrayList<Account> accounts){
         this.accounts = accounts;
 
-        listen();
+        try {
+            ServerSocket serverSocket = new ServerSocket(Integer.parseInt(port));
+
+            while (true)
+                new ClientHandler(serverSocket.accept(), this).start();
+
+        } catch (IOException e){
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
-    public void listen(){
-        if (serverSocket != null)
-            throw new RuntimeException("Socket already open");
+    public boolean accountExists(String username){
+        return accounts.stream().filter(acc -> username.equals(acc.getUsername())).findFirst().orElse(null) != null;
+    }
 
-        try {
-            serverSocket = new ServerSocket(this.port);
+    public void addAccount(Account account){
+        accounts.add(account);
+    }
 
-            while (true){
-                clientSocket = serverSocket.accept();
+    public boolean authenticate(int authToken){
+        return accounts.stream().filter(acc -> authToken == acc.getAuthToken()).findFirst().orElse(null) != null;
+    }
 
-                clientHandler = new ClientHandler(clientSocket, accounts);
+    public ArrayList<Account> getAccounts() {
+        return accounts;
+    }
 
-                clientHandler.start();
-            }
-        } catch (IOException e){
-            throw new RuntimeException(e.getMessage());
-        }
+    public Account getAccount(String username){
+        return accounts.stream().filter(acc -> username.equals(acc.getUsername())).findFirst().orElse(null);
+    }
+
+    public Account getAccount(int authToken){
+        return accounts.stream().filter(acc -> authToken == acc.getAuthToken()).findFirst().orElse(null);
     }
 }
