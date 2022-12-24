@@ -3,19 +3,25 @@ import java.net.Socket;
 
 public class RequestHandler {
     private final String ip;
-
     private final int port;
-
     private Socket socket = null;
-
     private BufferedReader input;
     private ObjectOutputStream output;
 
+    /**
+     * Creates a handler, for sending requests and for receiving the server responses.
+     * Additionally, opens the communication socket stream
+     * @param ip address for the socket
+     * @param port address for the socket
+     */
     RequestHandler(String ip, String port){
         this.ip = ip;
         this.port = Integer.parseInt(port);
     }
 
+    /**
+     * Initializes the socket and the streams for sending and receiving information
+     */
     public void openConnection(){
         if (socket != null) {
             System.err.println("Socket already open");
@@ -32,6 +38,10 @@ public class RequestHandler {
         }
     }
 
+    /**
+     * Sending a request to the server and receiving and printing the server response
+     * @param request that the user wants to execute
+     */
     public void sendRequest(Request request) {
         try {
             output.writeObject(request);
@@ -44,6 +54,9 @@ public class RequestHandler {
         }
     }
 
+    /**
+     * Closes the input, output and the socket
+     */
     public void closeConnection(){
         try {
             socket.close();

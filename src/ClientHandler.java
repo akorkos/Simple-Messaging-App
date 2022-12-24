@@ -13,6 +13,11 @@ public class ClientHandler extends Thread{
     private ObjectInputStream input;
     private PrintWriter output;
 
+    /**
+     * Handler for each client
+     * @param socket of the client - server communication
+     * @param server handler of the server
+     */
     ClientHandler(Socket socket, ServerHandler server){
         this.socket = socket;
         this.server = server;
@@ -25,6 +30,9 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Executes a specific function, as requested
+     */
     @Override
     public void run() {
         try {
@@ -50,8 +58,14 @@ public class ClientHandler extends Thread{
             }
         }
     }
+
+    /**
+     * Validates a username. A username should only contain roman letters , numbers and the underscore
+     * @param username to be validated
+     * @return if the username is valid or not
+     */
     private boolean isValid(String username){
-        Pattern usernamePattern = Pattern.compile("^([a-zA-Z])+([\\w]{2,})+$");
+        Pattern usernamePattern = Pattern.compile("([0-9a-zA-Z_])+");
         Matcher matcher = usernamePattern.matcher(username);
         return matcher.matches();
     }
@@ -59,6 +73,12 @@ public class ClientHandler extends Thread{
     private void createAccount(String[] args){
         createAccount(args[0]);
     }
+
+    /**
+     * Creates a new account with the username provided. The method also checks, if the username is valid and if the
+     * username is already in use. If everything checks out, it sends to the client the auth token of the new user
+     * @param username for the new account
+     */
     private void createAccount(String username){
         if (!isValid(username))
             output.println("Invalid Username");
@@ -71,11 +91,18 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Authenticates the user and shows all registered accounts
+     * @param args containing the auth token
+     */
     private void showAccounts(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
             showAccounts();
     }
 
+    /**
+     * Prints all registered users
+     */
     private void showAccounts(){
         StringBuilder out = new StringBuilder();
 
@@ -84,11 +111,20 @@ public class ClientHandler extends Thread{
         output.println(out);
     }
 
+    /**
+     * Authenticates the user and send a message
+     * @param args contains the auth token, recipient username and message text
+     */
     private void sendMessage(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
             sendMessage(args[1], args[2]);
     }
 
+    /**
+     * Sends a message to a specific recipient
+     * @param recipient that receives the message
+     * @param message content
+     */
     private void sendMessage(String recipient, String message){
         Account recipientAccount = server.getAccount(recipient);
 
@@ -100,26 +136,43 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Authenticates the user and shows all the messages received
+     * @param args contains the auth token
+     */
     private void showInbox(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
             showInbox(Integer.parseInt(args[0]));
     }
 
+    /**
+     * Prints the inbox of a user. If a message is read a * is added
+     * @param authToken of the user
+     */
     private void showInbox(int authToken){
         Account account = server.getAccount(authToken);
         List<Message> inbox = account.getInbox();
         StringBuilder out = new StringBuilder();
 
         for (Message message : inbox)
-            out.append(message.getId()).append(". from: ").append(message.getSender()).append(message.isRead() ? "\n" : "*\n");
+            out.append(message.getId()).append(". from: ").append(message.getSender()).append(message.isRead() ? "*\n" : "\n");
         output.println(out);
     }
 
+    /**
+     * Authenticates the user and reads a message
+     * @param args contains the auth token and the message id
+     */
     private void readMessage(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
             readMessage(Integer.parseInt(args[0]), args[1]);
     }
 
+    /**
+     * Reads a specif message, if that message exists
+     * @param authToken of the user
+     * @param id of the message to be read
+     */
     private void readMessage(int authToken, String id){
         Account account = server.getAccount(authToken);
         Message message = account.readMessage(id);
@@ -130,11 +183,20 @@ public class ClientHandler extends Thread{
             output.println(message);
     }
 
+    /**
+     * Authenticates the user and deletes a message
+     * @param args contains the auth token and the message id
+     */
     private void deleteMessage(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
             deleteMessage(Integer.parseInt(args[0]), args[1]);
     }
 
+    /**
+     * a specif message, if that message exists
+     * @param authToken of the user
+     * @param id of the message to be deleted
+     */
     private void deleteMessage(int authToken, String id){
         Account account = server.getAccount(authToken);
 

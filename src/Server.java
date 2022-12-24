@@ -2,19 +2,21 @@ import java.util.ArrayList;
 
 public class Server {
 
+    /**
+     * Represents the server side of the communication. Additionally, some accounts with messages are created and stored
+     * @param port that the serves is listening
+     */
     Server(String port){
         ArrayList<Account> accounts = new ArrayList<>();
 
-        Account acc1 = new Account("Alex");
-        Account acc2 = new Account("Alkis");
-        Account acc3 = new Account("Panos");
+        Account acc1 = new Account("Alex", 1000);
+        Account acc2 = new Account("Alkis", 1001);
+        Account acc3 = new Account("Panos", 1002);
 
-        System.out.println(acc1.getAuthToken() + ", " + acc2.getAuthToken() + ", " + acc3.getAuthToken());
-
-        acc1.addMessage("Alkis","Tets");
-        acc1.addMessage("Panos","test");
-        acc3.addMessage("Alkis", "fedd");
-        acc3.addMessage("Alex","tyrr");
+        acc1.addMessage("Alkis","Test 1");
+        acc1.addMessage("Panos","Test 2");
+        acc3.addMessage("Alkis", "Test 3");
+        acc3.addMessage("Alex","Test 4");
 
         accounts.add(acc1);
         accounts.add(acc2);
