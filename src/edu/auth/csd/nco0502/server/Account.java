@@ -1,3 +1,5 @@
+package edu.auth.csd.nco0502.server;
+
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import java.io.Serializable;
 import java.security.SecureRandom;

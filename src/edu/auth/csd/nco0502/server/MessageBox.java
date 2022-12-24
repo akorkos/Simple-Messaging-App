@@ -1,3 +1,7 @@
+package edu.auth.csd.nco0502.server;
+
+import edu.auth.csd.nco0502.server.Message;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,7 +9,7 @@ public class MessageBox  {
     private final ArrayList<Message> messageBox;
 
     /**
-     * Message inbox. Messages are saved in a list
+     * edu.auth.csd.nco0502.server.Message inbox. Messages are saved in a list
      */
     MessageBox() {
         messageBox = new ArrayList<>();

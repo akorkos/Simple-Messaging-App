@@ -1,3 +1,8 @@
+package edu.auth.csd.nco0502.server;
+
+import edu.auth.csd.nco0502.server.Account;
+import edu.auth.csd.nco0502.server.ClientHandler;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;

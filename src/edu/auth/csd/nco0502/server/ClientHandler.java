@@ -1,3 +1,8 @@
+package edu.auth.csd.nco0502.server;
+
+import edu.auth.csd.nco0502.common.Request;
+import edu.auth.csd.nco0502.server.Account;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
@@ -178,7 +183,7 @@ public class ClientHandler extends Thread{
         Message message = account.readMessage(id);
 
         if (message == null)
-            output.println("Message ID does not exist");
+            output.println("edu.auth.csd.nco0502.server.Message ID does not exist");
         else
             output.println(message);
     }
@@ -201,7 +206,7 @@ public class ClientHandler extends Thread{
         Account account = server.getAccount(authToken);
 
         if (!account.deleteMessage(id))
-            output.println("Message does not exist");
+            output.println("edu.auth.csd.nco0502.server.Message does not exist");
         else
             output.println("OK");
     }

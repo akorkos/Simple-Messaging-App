@@ -1,3 +1,5 @@
+package edu.auth.csd.nco0502.common;
+
 import java.io.Serializable;
 
 public class Request implements Serializable {
@@ -9,7 +11,7 @@ public class Request implements Serializable {
      * @param fid function to be executed
      * @param args necessary information for the request execution
      */
-    Request(String fid, String[] args){
+    public Request(String fid, String[] args){
         this.fid = Integer.parseInt(fid);
         this.args = args;
     }

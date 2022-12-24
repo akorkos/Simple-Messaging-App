@@ -1,3 +1,5 @@
+package edu.auth.csd.nco0502.server;
+
 import java.util.ArrayList;
 
 public class Server {

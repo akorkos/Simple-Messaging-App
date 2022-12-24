@@ -1,3 +1,7 @@
+package edu.auth.csd.nco0502.client;
+
+import edu.auth.csd.nco0502.common.Request;
+
 import java.io.*;
 import java.net.Socket;
 
