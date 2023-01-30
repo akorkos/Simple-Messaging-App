@@ -122,7 +122,7 @@ public class ClientHandler extends Thread{
      */
     private void sendMessage(String[] args){
         if (server.authenticate(Integer.parseInt(args[0])))
-            sendMessage(args[1], args[2]);
+            sendMessage(Integer.parseInt(args[0]), args[1], args[2]);
     }
 
     /**
@@ -130,13 +130,14 @@ public class ClientHandler extends Thread{
      * @param recipient that receives the message
      * @param message content
      */
-    private void sendMessage(String recipient, String message){
+    private void sendMessage(int authToken, String recipient, String message){
         Account recipientAccount = server.getAccount(recipient);
+        String sender = String.valueOf(server.getAccount(authToken));
 
         if (recipientAccount == null)
             output.println("User does not exist");
         else {
-            recipientAccount.addMessage(recipient, message);
+            recipientAccount.addMessage(sender, message);
             output.println("OK");
         }
     }
@@ -160,7 +161,7 @@ public class ClientHandler extends Thread{
         StringBuilder out = new StringBuilder();
 
         for (Message message : inbox)
-            out.append(message.getId()).append(". from: ").append(message.getSender()).append(message.isRead() ? "*\n" : "\n");
+            out.append(message.getId()).append(". from: ").append(message.getSender()).append((message.isRead() ? "\n" : "*\n"));
         output.println(out);
     }
 
@@ -183,7 +184,7 @@ public class ClientHandler extends Thread{
         Message message = account.readMessage(id);
 
         if (message == null)
-            output.println("edu.auth.csd.nco0502.server.Message ID does not exist");
+            output.println("Message ID does not exist");
         else
             output.println(message);
     }
@@ -206,7 +207,7 @@ public class ClientHandler extends Thread{
         Account account = server.getAccount(authToken);
 
         if (!account.deleteMessage(id))
-            output.println("edu.auth.csd.nco0502.server.Message does not exist");
+            output.println("Message does not exist");
         else
             output.println("OK");
     }

@@ -9,7 +9,7 @@ public class MessageBox  {
     private final ArrayList<Message> messageBox;
 
     /**
-     * edu.auth.csd.nco0502.server.Message inbox. Messages are saved in a list
+     * Messages are saved in a list
      */
     MessageBox() {
         messageBox = new ArrayList<>();

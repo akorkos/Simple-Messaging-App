@@ -33,6 +33,7 @@ public class Server {
             System.err.println("Not enough arguments passed");
             System.exit(1);
         }
+
         port = args[0];
 
         new Server(port);
