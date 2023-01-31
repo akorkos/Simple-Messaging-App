@@ -9,6 +9,10 @@ public class Server {
      * @param port that the serves is listening
      */
     Server(String port){
+
+        /*
+         * Dummy users creation, for testing.
+         */
         ArrayList<Account> accounts = new ArrayList<>();
 
         Account acc1 = new Account("Alex", 1000);
@@ -29,8 +33,8 @@ public class Server {
     public static void main(String[] args){
         String port;
 
-        if (args.length == 0) {
-            System.err.println("Not enough arguments passed");
+        if (args.length != 1) {
+            System.err.println("Not enough or incorrect number of arguments passed");
             System.exit(1);
         }
 

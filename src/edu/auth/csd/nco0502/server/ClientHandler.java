@@ -76,7 +76,10 @@ public class ClientHandler extends Thread{
     }
 
     private void createAccount(String[] args){
-        createAccount(args[0]);
+        if (args.length == 1)
+            createAccount(args[0]);
+        else
+            output.println("Incorrect number of arguments");
     }
 
     /**
@@ -101,8 +104,12 @@ public class ClientHandler extends Thread{
      * @param args containing the auth token
      */
     private void showAccounts(String[] args){
-        if (server.authenticate(Integer.parseInt(args[0])))
+        if (args.length != 1)
+            output.println("Incorrect number of arguments");
+        else if (server.authenticate(Integer.parseInt(args[0])))
             showAccounts();
+        else
+            output.println("Invalid Auth Token");
     }
 
     /**
@@ -121,8 +128,12 @@ public class ClientHandler extends Thread{
      * @param args contains the auth token, recipient username and message text
      */
     private void sendMessage(String[] args){
-        if (server.authenticate(Integer.parseInt(args[0])))
+        if (args.length != 3)
+            output.println("Incorrect number of arguments");
+        else if (server.authenticate(Integer.parseInt(args[0])))
             sendMessage(Integer.parseInt(args[0]), args[1], args[2]);
+        else
+            output.println("Invalid Auth Token");
     }
 
     /**
@@ -147,8 +158,12 @@ public class ClientHandler extends Thread{
      * @param args contains the auth token
      */
     private void showInbox(String[] args){
-        if (server.authenticate(Integer.parseInt(args[0])))
+        if (args.length != 1)
+            output.println("Incorrect number of arguments");
+        else if (server.authenticate(Integer.parseInt(args[0])))
             showInbox(Integer.parseInt(args[0]));
+        else
+            output.println("Invalid Auth Token");
     }
 
     /**
@@ -170,8 +185,12 @@ public class ClientHandler extends Thread{
      * @param args contains the auth token and the message id
      */
     private void readMessage(String[] args){
-        if (server.authenticate(Integer.parseInt(args[0])))
+        if (args.length != 2)
+            output.println("Incorrect number of arguments");
+        else if (server.authenticate(Integer.parseInt(args[0])))
             readMessage(Integer.parseInt(args[0]), args[1]);
+        else
+            output.println("Invalid Auth Token");
     }
 
     /**
@@ -194,8 +213,12 @@ public class ClientHandler extends Thread{
      * @param args contains the auth token and the message id
      */
     private void deleteMessage(String[] args){
-        if (server.authenticate(Integer.parseInt(args[0])))
+        if (args.length != 2)
+            output.println("Incorrect number of arguments");
+        else if (server.authenticate(Integer.parseInt(args[0])))
             deleteMessage(Integer.parseInt(args[0]), args[1]);
+        else
+            output.println("Invalid Auth Token");
     }
 
     /**
