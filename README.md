@@ -1,4 +1,4 @@
-# Simple Messaging Application
+# Simple CLI Messaging Application
 
 ### Πληροφορίες
 Η εργασία στο μάθημα [Δίκτυα Επικοινωνιών [NCO-05-02]](https://elearning.auth.gr/course/view.php?id=5942) του τμήματος 
