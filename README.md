@@ -1,47 +1,33 @@
 # Simple CLI Messaging Application
 
-Η εργασία στο μάθημα [Δίκτυα Επικοινωνιών [NCO-05-02]](https://elearning.auth.gr/course/view.php?id=5942) (2022/23) του τμήματος 
-πληροφορικής του Α.Π.Θ. <br/>
+A project developed for the course [Computer Networks [NCO-05-02]](https://elearning.auth.gr/course/view.php?id=5942) (2022/23) of the Department of Computer Science at Aristotle University of Thessaloniki (AUTh).
 
-## Περιγραφή
+## Description
 
-Στα πλαίσια αυτής της εργασίας αναπτύχθηκε ένα κατανεμημένο σύστημα ανταλλαγής μηνυμάτων που χρησιμοποιεί ένα απλό 
-request-reply protocol. Οι clients στέλνουν στον Server ένα Request και έπειτα ο Server απαντάει με ένα Response και η 
-σύνδεση τους τερματίζει. Σαφέστερα, χρησιμοποιήθηκε η τεχνολογία Sockets (Sockets-I/O Streams-Threads).
+Within the scope of this project, a distributed messaging system was developed using a simple request-reply protocol. Clients send a request to the server, and the server responds with a response, terminating the connection. Specifically, the Sockets technology (Sockets-I/O Streams-Threads) was used.
 
-Σε αυτό το σύστημα διαφορετικοί χρήστες θα μπορούν να δημιουργήσουν accounts και να στείλουν μηνύματα μεταξύ τους, 
-καθώς ο εξυπηρετητής θα τα διαχειρίζεται. Τη λειτουργικότητα αυτή θα τους την παρέχουν:
-* ένα πρόγραμμα εξυπηρετητή, το οποίο θα έχει την ικανότητα να διαχειριστεί ταυτόχρονα πολλαπλές αιτήσεις από πελάτες.
-* προγράμματα πελάτη, κάθε ένα από τα οποία θα έχει την ικανότητα να στέλνει αιτήσεις στον εξυπηρετητή.
+In this system, different users can create accounts and send messages to each other, with the server handling them. The following components provide this functionality:
+* a server program capable of handling multiple requests from clients simultaneously,
+* client programs, each capable of sending requests to the server.
 
-## Υλοποίηση
+## Implementation
 
-Η δομή της εργασίας, φαίνεται απο το παρακάτω διάγραμμα UML:
+The structure of the project is shown in the following UML diagram:
 
 ![UML Diagram](/uml.png)
 
-Το πακέτο `Client` υλοποιεί τις απαραίτητες δομές για τον χρήστη. Σαφέστερα, η κλάση `Client` είναι αυτή που εκτελεί τα
-αιτήματα προς τον `Server`. Δέχεται τα εξής ορίσματα: `ip, port_number, fid, args` για την εκτέλεση των αιτημάτων. Επιπλέον,
-το πακέτο περιεχει και την κλάση `RequestHandler` όπου καλείται απο την κλάση `Client` και αναλαμβάνει να ανοίξει την
-σύνδεση με τον `Server`, να αποσταλεί το αίτημα στον `Server` και τέλος να κλείσει τη σύνδεση με τον `Server`.
+The `Client` package implements the necessary structures for the user. Specifically, the `Client` class is responsible for executing requests to the server. It accepts the following arguments: `ip, port_number, fid, args` for request execution. Additionally, the package includes the `RequestHandler` class, which is called by the `Client` class and is responsible for opening the connection to the server, sending the request to the server, and finally closing the connection to the server.
 
-Το πακέτο `Common`, περιεχει μόνο μια κλάση (`Request`) όπου αναπαριστά τα αιτήματα. Χρησιμοποιείται και στο πακέτου του
-`Client` αλλά και στου `Server`, για την αποστολή των αιτημάτων και την επεξεργασία τους αντίστοιχα.
+The `Common` package contains only one class `Request` that represents requests. It is used in both the `Client` and the `Server` packages for sending and processing requests, respectively.
 
-Το πακέτο `Server` υλοποιεί τις απαραίτητες δομές που απαιτεί ο `Server`. Αρχικά, η κλάση `Server` δέχεται μόνο ενα όρισμα
-το `port_number` οπου δηλώνει την πόρτα στην οποία θα ακούει αιτήσεις. Η κλάση `ServerHandler`, αναλαμβάνει τον χειρισμό 
-των λειτουργιών του `Server`, όπως την ταυτοποίηση ενός χρηστή κτλ. Η εκτέλεση των αιτημάτων κάθε χρηστή, επιτυγχάνεται μέσω 
-της κλάσης `ClientHandler` που καλείται απο την `ServerHandler` που είναι εφοδιασμένη με μεθόδους για την εμφάνιση μιας λίστας 
-με όλα τα accounts που υπάρχουν στο σύστημα, την αποστολή ενός μηνύματος κτλ. 
-Επιπλέον, το πακέτο περιεχει και τις κλάσεις `Account, MessageBox, Message` που αναπαριστούν του χρηστές, την θυρίδα μηνυμάτων
-κάθε χρηστή και κάθε μήνυμα αντίστοιχα.
+The `Server` package implements the necessary structures required by the server. Initially, the Server class accepts only one argument, the `port_number`, which specifies the port on which it will listen for requests. The `ServerHandler` class handles the server's functions, such as user authentication, etc. The execution of user requests is achieved through the `ClientHandler` class, which is called by the `ServerHandler` and is equipped with methods for displaying a list of all accounts in the system, sending a message, etc. Additionally, the package includes the `Account`, `MessageBox`, and `Message` classes, which represent users, each user's message box, and individual messages, respectively.
 
-## Λεπτομέρειες / παραδοχές
+## Details / Assumptions
 
-* Ο `Server` τρέχει ατέρμονα, μέχρι να κλείσει το παράθυρο στο οποίο τρέχει,
-* το ID ενός χρήστη, αποτελείται απο 4 τυχαία αριθμητικά ψηφία,
-* το ID ενός μηνύματος, αποτελείται απο 4 τυχαία αλφαριθμητικά ψηφία (π.χ. gf9U),
-* εαν δεν δοθούν σε κάποια εκτέλεση του `Client` τα απαραίτητα ορίσματα τότε δεν εμφανίζεται τίποτα στην οθόνη,
-* η σύνταξη των δεδομένων είναι case sensitive (δηλ. ```Alex != alex```),
-* έχει γίνει η παραδοχή οτι όταν θα πρέπει να περαστούν αριθμητικές τιμές δεν θα δίνονται αλφαριθμητικές τιμές,
-* τα μηνύματα που δίνει ο χρηστης δεν μπορούν να περιέχουν κενά.
+* The Server runs indefinitely until the window in which it is running is closed,
+* a user's ID consists of 4 random numeric digits,
+* a message ID consists of 4 random alphanumeric digits (e.g. gf9U),
+* if the required arguments are not provided in a Client execution, nothing is displayed on the screen,
+* data syntax is case-sensitive (e.g. ```Alex != alex```),
+* it is assumed that numeric values will be provided when needed, and no alphanumeric values will be given,
+* user messages cannot contain spaces.
