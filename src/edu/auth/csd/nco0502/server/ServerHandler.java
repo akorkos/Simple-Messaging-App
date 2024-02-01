@@ -11,8 +11,9 @@ public class ServerHandler {
     private final ArrayList<Account> accounts;
 
     /**
-     * Handles the server functions that need to be performed. In addition, initializes the socket that the server
-     * is listening for requests and provides the accounts "database"
+     * Handles the server functions that need to be performed. In addition,
+     * initializes the socket that the server is listening for requests and 
+     * provides the accounts "database"
      * @param port to listen
      * @param accounts "database"
      */

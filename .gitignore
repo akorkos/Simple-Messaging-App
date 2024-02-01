@@ -3,6 +3,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .idea
+/META-INF/
 
 ### Eclipse ###
 .apt_generated
@@ -30,3 +31,4 @@ bin/
 .DS_Store.idea
 Project.iml
 src/META-INF/MANIFEST.MF
+/META-INF

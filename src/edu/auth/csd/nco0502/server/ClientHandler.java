@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ public class ClientHandler extends Thread{
     private final ServerHandler server;
     private ObjectInputStream input;
     private PrintWriter output;
+    private ArrayList<Integer> tokensUsed;
 
     /**
      * Handler for each client
@@ -24,6 +26,11 @@ public class ClientHandler extends Thread{
      * @param server handler of the server
      */
     ClientHandler(Socket socket, ServerHandler server){
+        tokensUsed = new ArrayList<>();
+        tokensUsed.add(1000);
+        tokensUsed.add(1001);
+        tokensUsed.add(1002);
+
         this.socket = socket;
         this.server = server;
         try {
@@ -65,7 +72,8 @@ public class ClientHandler extends Thread{
     }
 
     /**
-     * Validates a username. A username should only contain roman letters , numbers and the underscore
+     * Validates a username. A username should only contain roman letters, 
+     * numbers and the underscore
      * @param username to be validated
      * @return if the username is valid or not
      */
@@ -83,8 +91,10 @@ public class ClientHandler extends Thread{
     }
 
     /**
-     * Creates a new account with the username provided. The method also checks, if the username is valid and if the
-     * username is already in use. If everything checks out, it sends to the client the auth token of the new user
+     * Creates a new account with the username provided. The method also checks,
+     * if the username is valid and if the username is already in use. If 
+     * everything checks out, it sends to the client the auth token of the new 
+     * user.
      * @param username for the new account
      */
     private void createAccount(String username){
@@ -93,8 +103,9 @@ public class ClientHandler extends Thread{
         else if (server.accountExists(username))
             output.println("Sorry, the user already exists");
         else {
-            Account account = new Account(username);
+            Account account = new Account(username, tokensUsed);
             server.addAccount(account);
+            tokensUsed.add(account.getAuthToken());
             output.println(account.getAuthToken());
         }
     }

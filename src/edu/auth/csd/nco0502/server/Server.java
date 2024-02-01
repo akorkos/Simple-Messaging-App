@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class Server {
 
     /**
-     * Represents the server side of the communication. Additionally, some accounts with messages are created and stored
+     * Represents the server side of the communication. Additionally, some
+     * accounts with messages are created and stored
      * @param port that the serves is listening
      */
     Server(String port){

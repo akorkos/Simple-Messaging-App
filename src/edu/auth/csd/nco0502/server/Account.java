@@ -3,23 +3,28 @@ package edu.auth.csd.nco0502.server;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Account implements Serializable {
     private final String username;
-    private final int authToken;
+    private int authToken;
     private final MessageBox inbox;
     private static final char[] ALPHABET = "0123456789".toCharArray();
 
     /**
-     * Creates a new user account with a specific username given by the user. The constructor, creates an empty message
-     * inbox and assigns a unique auth token for the user (the auth token is used for every function expect for the
-     * first one)
+     * Creates a new user account with a specific username given by the user. 
+     * The constructor, creates an empty message inbox and assigns a unique auth
+     * token for the user (the auth token is used for every function expect for 
+     * the first one). The constructor also checks if the auth token is unique
+     * and if not, it creates a new one.
      * @param username for the new account
      */
-    Account(String username){
+    Account(String username, ArrayList<Integer> tokensUsed){
         this.username = username;
-        authToken = Integer.parseInt(NanoIdUtils.randomNanoId(new SecureRandom(), ALPHABET, 4));
+        do {
+            authToken = Integer.parseInt(NanoIdUtils.randomNanoId(new SecureRandom(), ALPHABET, 4));
+        } while (tokensUsed.contains(authToken));
         inbox = new MessageBox();
     }
 

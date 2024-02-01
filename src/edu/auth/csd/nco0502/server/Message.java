@@ -9,8 +9,8 @@ public class Message {
     private static final char[] ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
     /**
-     * Represents a message. Also, assigns a unique id for the message and marks the message
-     * as unread
+     * Represents a message. Also, assigns a unique id for the message and marks 
+     * the message as unread
      * @param sender of the message
      * @param body content of the message
      */
